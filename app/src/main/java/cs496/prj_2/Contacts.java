@@ -32,37 +32,37 @@ public class Contacts extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.contacts_list_view, container, false);
-        super.onCreate(savedInstanceState);
-        mContext = getContext();
-        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
 //        super.onCreate(savedInstanceState);
-
-        if(cur.getCount()>0)
-        {
-            while (cur.moveToNext()) {
-                HashMap<String,String> localContact = new HashMap<>();
-//                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
-                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
-//                if (("1").equals(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)))) {
-//                    Cursor pCur = cr.query(
-//                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-//                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+//        mContext = getContext();
+//        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
+////        super.onCreate(savedInstanceState);
 //
-//                    String phoneNum = pCur.getString(pCur.getColumnIndex(
-//                                ContactsContract.CommonDataKinds.Phone.NUMBER));
-//                    localContact.put("id",id);
-                localContact.put("name",name);
-                localContact.put("phoneNum", number);
-//                }else{
-//                    localContact.put("id",id);
-//                    localContact.put("name",name);
-//                    localContact.put("phoneNum",null);
-//                }
-                localContacts.add(localContact);
-            }
-        }
-        cur.close();
+//        if(cur.getCount()>0)
+//        {
+//            while (cur.moveToNext()) {
+//                HashMap<String,String> localContact = new HashMap<>();
+////                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+//                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
+//                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
+////                if (("1").equals(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)))) {
+////                    Cursor pCur = cr.query(
+////                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+////                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+////
+////                    String phoneNum = pCur.getString(pCur.getColumnIndex(
+////                                ContactsContract.CommonDataKinds.Phone.NUMBER));
+////                    localContact.put("id",id);
+//                localContact.put("name",name);
+//                localContact.put("phoneNum", number);
+////                }else{
+////                    localContact.put("id",id);
+////                    localContact.put("name",name);
+////                    localContact.put("phoneNum",null);
+////                }
+//                localContacts.add(localContact);
+//            }
+//        }
+//        cur.close();
 
         listView = (ListView) view.findViewById(android.R.id.list);
 
@@ -101,37 +101,38 @@ public class Contacts extends Fragment {
 
     }
 
-//    public void onCreate(Bundle savedInstanceState) {
-////        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
-//        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
-//        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+//        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
+        mContext = getContext();
+        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
+        super.onCreate(savedInstanceState);
+
+        if(cur.moveToFirst() && cur.getCount()>0)
+        {
+            while (cur.moveToNext()) {
+                HashMap<String,String> localContact = new HashMap<>();
+//                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
+                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
+//                if (("1").equals(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)))) {
+//                    Cursor pCur = cr.query(
+//                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+//                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 //
-//        if(cur.moveToFirst() && cur.getCount()>0)
-//        {
-//            while (cur.moveToNext()) {
-//                HashMap<String,String> localContact = new HashMap<>();
-////                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-//                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
-//                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
-////                if (("1").equals(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)))) {
-////                    Cursor pCur = cr.query(
-////                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-////                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
-////
-////                    String phoneNum = pCur.getString(pCur.getColumnIndex(
-////                                ContactsContract.CommonDataKinds.Phone.NUMBER));
-////                    localContact.put("id",id);
+//                    String phoneNum = pCur.getString(pCur.getColumnIndex(
+//                                ContactsContract.CommonDataKinds.Phone.NUMBER));
+//                    localContact.put("id",id);
+                    localContact.put("name",name);
+                    localContact.put("phoneNum", number);
+//                }else{
+//                    localContact.put("id",id);
 //                    localContact.put("name",name);
-//                    localContact.put("phoneNum", number);
-////                }else{
-////                    localContact.put("id",id);
-////                    localContact.put("name",name);
-////                    localContact.put("phoneNum",null);
-////                }
-//                localContacts.add(localContact);
-//            }
-//        }
-//        cur.close();
-//    }
+//                    localContact.put("phoneNum",null);
+//                }
+                localContacts.add(localContact);
+            }
+        }
+        cur.close();
+    }
 
 }

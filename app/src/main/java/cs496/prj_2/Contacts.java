@@ -44,10 +44,10 @@ import java.util.Map;
 
 public class Contacts extends Fragment {
 
-    HttpClient httpClient = new DefaultHttpClient();
-    HttpContext httpContext = new BasicHttpContext();
-    HttpPost httpPost = new HttpPost(/*put url her*/);
-    String serverResponse;
+//    HttpClient httpClient = new DefaultHttpClient();
+//    HttpContext httpContext = new BasicHttpContext();
+//    HttpPost httpPost = new HttpPost(/*put url her*/);
+//    String serverResponse;
     private Context mContext;
     private Cursor cur;
     private RestAdapter mRestAdapter;
@@ -79,22 +79,18 @@ public class Contacts extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                // getting values from selected ListItem
                 String name = ((TextView) view.findViewById(R.id.name))
                         .getText().toString();
-//                String id1 = "Id: "+((TextView) view.findViewById(R.id.id))
-//                        .getText().toString();
                 String number = "Phone Number: " + ((TextView) view.findViewById(R.id.number))
                         .getText().toString();
-                String email = "Email: " + ((TextView) view.findViewById(R.id.email));
+                String email = "Email: " + ((TextView) view.findViewById(R.id.email))
+                        .getText().toString();
 
-                // Starting single contact activity
                 Intent in = new Intent(getActivity().getApplicationContext(),
                         SingleContacts.class);
                 in.putExtra("name", name);
                 in.putExtra("phoneNum", number);
                 in.putExtra("email",email);
-//                in.putExtra("id", id1);
                 startActivity(in);
 
             }
@@ -105,9 +101,9 @@ public class Contacts extends Fragment {
 
     public void onCreate(Bundle savedInstanceState) {
 //        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
-        mContext = getContext();
-        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
-        super.onCreate(savedInstanceState);
+//        mContext = getContext();
+//        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
+//        super.onCreate(savedInstanceState);
 
         Log.d("StartContact", AccessToken.getCurrentAccessToken().getToken());
 

@@ -34,4 +34,12 @@
         android:paddingTop="6dip"
         android:textSize="0sp" />
 
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="2dip"
+        android:paddingTop="6dip"
+        android:textSize="0sp" />
+
 </LinearLayout>

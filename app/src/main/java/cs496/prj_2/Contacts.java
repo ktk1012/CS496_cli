@@ -52,7 +52,7 @@ public class Contacts extends Fragment {
     private Cursor cur;
     private RestAdapter mRestAdapter;
 
-    ArrayList<HashMap<String,String>> localContacts = new ArrayList<HashMap<String,String>>();
+    ArrayList<Address> localContacts = new ArrayList<>();
     ArrayList<HashMap<String,String>> Contacts = new ArrayList<HashMap<String,String>>();
     ListView listView;
 
@@ -69,8 +69,8 @@ public class Contacts extends Fragment {
         SimpleAdapter adapter = new SimpleAdapter(
                 getActivity(), Contacts,
                 R.layout.contacts_list_item,
-                new String[]{"name", "number"},
-                new int[] { R.id.name, R.id.number}
+                new String[]{"name", "number", "email"},
+                new int[] { R.id.name, R.id.number, R.id.email}
         );
         listView.setAdapter(adapter);
 
@@ -86,12 +86,14 @@ public class Contacts extends Fragment {
 //                        .getText().toString();
                 String number = "Phone Number: " + ((TextView) view.findViewById(R.id.number))
                         .getText().toString();
+                String email = "Email: " + ((TextView) view.findViewById(R.id.email));
 
                 // Starting single contact activity
                 Intent in = new Intent(getActivity().getApplicationContext(),
                         SingleContacts.class);
                 in.putExtra("name", name);
                 in.putExtra("phoneNum", number);
+                in.putExtra("email",email);
 //                in.putExtra("id", id1);
                 startActivity(in);
 
@@ -137,46 +139,49 @@ public class Contacts extends Fragment {
         });
 
 
-        if(cur.moveToFirst() && cur.getCount()>0)
-        {
-            while (cur.moveToNext()) {
-                HashMap<String,String> localContact = new HashMap<>();
-                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
-                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
-                    localContact.put("name",name);
-                    localContact.put("number", number);
-//                    localContact.put("phoneNum", number);
-                localContacts.add(localContact);
-            }
-        }
-        cur.close();
-        JsonArray = listmap_to_json_string(localContacts);
+//        if(cur.moveToFirst() && cur.getCount()>0)
+//        {
+//            while (cur.moveToNext()) {
+////                HashMap<String,String> localContact = new HashMap<>();
+//                Address localContact = new Address();
+//                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
+//                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
+//                localContact.setName(name);
+//                localContact.setPhone_num(number);
+////                localContact.put("number", number);
+////                localContact.put("name",name);
+////                    localContact.put("phoneNum", number);
+//                localContacts.add(localContact);
+//            }
+//        }
+//        cur.close();
+//        JsonArray = listmap_to_json_string(localContacts);
 
-        try{
-            StringEntity se = new StringEntity(JsonArray);
-            httpPost.setEntity(se);
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-
-            HttpResponse response = httpClient.execute(httpPost,httpContext);
-            JSONArray JsonResponse = (JSONArray) response;
-            HttpEntity entity = response.getEntity();
-
-            serverResponse = EntityUtils.toString(entity);
-
-            for (int i=0; i<JsonResponse.length(); i++){
-                HashMap<String, String> map = new HashMap<>();
-                JSONObject c = (JSONObject)JsonResponse.get(i);
-                Iterator iter = c.keys();
-                while(iter.hasNext()){
-                    String currentkey = (String) iter.next();
-                    map.put(currentkey, c.getString(currentkey));
-                }
-                Contacts.add(map);
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+//        try{
+//            StringEntity se = new StringEntity(JsonArray);
+//            httpPost.setEntity(se);
+//            httpPost.setHeader("Accept", "application/json");
+//            httpPost.setHeader("Content-type", "application/json");
+//
+//            HttpResponse response = httpClient.execute(httpPost,httpContext);
+//            JSONArray JsonResponse = (JSONArray) response;
+//            HttpEntity entity = response.getEntity();
+//
+//            serverResponse = EntityUtils.toString(entity);
+//
+//            for (int i=0; i<JsonResponse.length(); i++){
+//                HashMap<String, String> map = new HashMap<>();
+//                JSONObject c = (JSONObject)JsonResponse.get(i);
+//                Iterator iter = c.keys();
+//                while(iter.hasNext()){
+//                    String currentkey = (String) iter.next();
+//                    map.put(currentkey, c.getString(currentkey));
+//                }
+//                Contacts.add(map);
+//            }
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
     }
 
     public String listmap_to_json_string(ArrayList<HashMap<String, String>> list){

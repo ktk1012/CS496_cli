@@ -2,11 +2,14 @@ package cs496.prj_2;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +31,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,9 +67,23 @@ public class MainActivity extends AppCompatActivity {
         callbackManger = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
-         email = (EditText)findViewById(R.id.email);
+        email = (EditText)findViewById(R.id.email);
         password = (EditText)findViewById(R.id.password);
 
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.facebook.samples.hellofacebook",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
         /* Initialize facebook login */
         final LoginButton loginButton = (LoginButton)findViewById(R.id.facebook_login);
         loginButton.setReadPermissions("public_profile", "user_friends");

@@ -6,6 +6,7 @@ import com.strongloop.android.loopback.Model;
  * Created by q on 2016-07-05.
  */
 public class Address extends Model {
+    private String Id;
     private String name;
     private String picture;
     private String phone_num;

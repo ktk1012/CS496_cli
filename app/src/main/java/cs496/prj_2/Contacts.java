@@ -20,6 +20,7 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
+import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
@@ -45,13 +46,15 @@ import java.util.Map;
 
 public class Contacts extends Fragment {
 
-    HttpClient httpClient = new DefaultHttpClient();
-    HttpContext httpContext = new BasicHttpContext();
-    HttpPost httpPost = new HttpPost("http://52.78.69.111:3000/api");
-    String serverResponse;
+//    HttpClient httpClient = new DefaultHttpClient();
+//    HttpContext httpContext = new BasicHttpContext();
+//    HttpPost httpPost = new HttpPost(/*put url her*/);
+//    String serverResponse;
     private Context mContext;
     private Cursor cur;
     private RestAdapter mRestAdapter;
+    private AddressRepository mAddressRepo;
+    private SimpleAdapter mAdapter;
 
     ArrayList<Address> localContacts = new ArrayList<>();
     ArrayList<HashMap<String,String>> Contacts = new ArrayList<HashMap<String,String>>();
@@ -66,14 +69,22 @@ public class Contacts extends Fragment {
         View view = inflater.inflate(R.layout.contacts_list_view, container, false);
 
         listView = (ListView) view.findViewById(android.R.id.list);
+        Log.d("OnCreateView", String.valueOf(Contacts.size()));
 
-        SimpleAdapter adapter = new SimpleAdapter(
+        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
+
+        mAddressRepo = mRestAdapter.createRepository(AddressRepository.class);
+
+        Log.d("OnCreateView", String.valueOf(Contacts.size()));
+
+
+        mAdapter= new SimpleAdapter(
                 getActivity(), Contacts,
                 R.layout.contacts_list_item,
                 new String[]{"name", "number", "email"},
                 new int[] { R.id.name, R.id.number, R.id.email}
         );
-        listView.setAdapter(adapter);
+        listView.setAdapter(mAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -96,60 +107,23 @@ public class Contacts extends Fragment {
 
             }
         });
-        return view;
 
-    }
-
-    public void onCreate(Bundle savedInstanceState) {
-        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
-        mContext = getContext();
-        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
-        super.onCreate(savedInstanceState);
-
-        Log.d("StartContact", AccessToken.getCurrentAccessToken().getToken());
-
-
-        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
-
-        AddressRepository repository = mRestAdapter.createRepository(AddressRepository.class);
-
-        if(cur.moveToFirst() && cur.getCount()>0)
-        {
-            while (cur.moveToNext()) {
-                Address localContact = new Address();
-                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
-                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
-                localContact.setName(name);
-                localContact.setPhone_num(number);
-                localContact.save(new VoidCallback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-
-                    }
-                });
-//                localContacts.add(localContact);
-            }
-        }
-        cur.close();
         Log.d("GET ALL ADDRESSED", "ASDFASDF");
-        repository.findAll(new ListCallback<Address>() {
+        mAddressRepo.findAll(new ListCallback<Address>() {
             @Override
             public void onSuccess(List<Address> objects) {
                 Log.d("GET SUCCESS", String.valueOf(objects.size()));
                 for (int i=0; i<objects.size(); i++){
                     HashMap<String, String> map = new HashMap<>();
                     Address address = objects.get(i);
+                    Log.d("GET SUCCESSS", String.valueOf(i) + address.getId());
                     map.put("name", address.getName());
                     map.put("number", address.getPhone_num());
                     map.put("email", address.getEmail());
 //                    map.put("picture", address.getPicture());
                     Contacts.add(map);
                 }
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -158,6 +132,48 @@ public class Contacts extends Fragment {
             }
         });
 
+        return view;
+
+    }
+
+    public void onCreate(Bundle savedInstanceState) {
+        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
+        super.onCreate(savedInstanceState);
+        mContext = getContext();
+        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
+
+        Log.d("StartContact", AccessToken.getCurrentAccessToken().getToken());
+
+
+
+
+//        if(cur.moveToFirst() && cur.getCount()>0)
+//        {
+//            while (cur.moveToNext()) {
+//                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
+//                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
+//                Log.d("READ", name + number);
+//                String owner = AccessToken.getCurrentAccessToken().getUserId();
+//                Address localContact = repository.createObject(ImmutableMap.of("name", name,
+//                        "number", number, "owner", owner));
+////                localContact.setName(name);
+////                localContact.setPhone_num(number);
+////                localContact.setOwner(owner);
+//                localContact.save(new VoidCallback() {
+//                    @Override
+//                    public void onSuccess() {
+//                        Log.d("SAVE", "SUCCESS");
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable t) {
+//                        Log.d("SAVE", "FAIL");
+//                    }
+//                });
+////                localContacts.add(localContact);
+//            }
+//        }
+//        cur.close();
 
 
 //        JsonArray = listmap_to_json_string(localContacts);

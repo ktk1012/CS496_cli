@@ -21,7 +21,7 @@ public class Tabsadapter extends FragmentStatePagerAdapter {
                 return new Contacts();
 
             case 1:
-                return new Random();
+                return new Gallery();
 
             case 2:
                 return new Random();

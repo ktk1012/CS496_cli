@@ -22,6 +22,10 @@
             android:label="Tabs"
             android:name="cs496.prj_2.SingleContacts">
         </activity>
+        <activity
+            android:label="Tabs"
+            android:name="cs496.prj_2.ImageActivity">
+        </activity>
     </application>
 
 </manifest>

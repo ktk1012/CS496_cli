@@ -22,6 +22,7 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
+import com.strongloop.android.loopback.callbacks.VoidCallback;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -44,10 +45,10 @@ import java.util.Map;
 
 public class Contacts extends Fragment {
 
-//    HttpClient httpClient = new DefaultHttpClient();
-//    HttpContext httpContext = new BasicHttpContext();
-//    HttpPost httpPost = new HttpPost(/*put url her*/);
-//    String serverResponse;
+    HttpClient httpClient = new DefaultHttpClient();
+    HttpContext httpContext = new BasicHttpContext();
+    HttpPost httpPost = new HttpPost("http://52.78.69.111:3000/api");
+    String serverResponse;
     private Context mContext;
     private Cursor cur;
     private RestAdapter mRestAdapter;
@@ -100,10 +101,10 @@ public class Contacts extends Fragment {
     }
 
     public void onCreate(Bundle savedInstanceState) {
-//        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
-//        mContext = getContext();
-//        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
-//        super.onCreate(savedInstanceState);
+        ContentResolver cr = getActivity().getApplicationContext().getContentResolver();
+        mContext = getContext();
+        cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
+        super.onCreate(savedInstanceState);
 
         Log.d("StartContact", AccessToken.getCurrentAccessToken().getToken());
 
@@ -112,6 +113,29 @@ public class Contacts extends Fragment {
 
         AddressRepository repository = mRestAdapter.createRepository(AddressRepository.class);
 
+        if(cur.moveToFirst() && cur.getCount()>0)
+        {
+            while (cur.moveToNext()) {
+                Address localContact = new Address();
+                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
+                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
+                localContact.setName(name);
+                localContact.setPhone_num(number);
+                localContact.save(new VoidCallback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+                });
+//                localContacts.add(localContact);
+            }
+        }
+        cur.close();
         Log.d("GET ALL ADDRESSED", "ASDFASDF");
         repository.findAll(new ListCallback<Address>() {
             @Override
@@ -135,22 +159,7 @@ public class Contacts extends Fragment {
         });
 
 
-//        if(cur.moveToFirst() && cur.getCount()>0)
-//        {
-//            while (cur.moveToNext()) {
-////                HashMap<String,String> localContact = new HashMap<>();
-//                Address localContact = new Address();
-//                String name = cur.getString(cur.getColumnIndex(Phone.DISPLAY_NAME));
-//                String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
-//                localContact.setName(name);
-//                localContact.setPhone_num(number);
-////                localContact.put("number", number);
-////                localContact.put("name",name);
-////                    localContact.put("phoneNum", number);
-//                localContacts.add(localContact);
-//            }
-//        }
-//        cur.close();
+
 //        JsonArray = listmap_to_json_string(localContacts);
 
 //        try{

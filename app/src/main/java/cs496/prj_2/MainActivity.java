@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 //    List<NameValuePair> params;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -34,12 +34,14 @@ public class MainActivity extends AppCompatActivity {
         password = (EditText)findViewById(R.id.password);
 
         login = (Button)findViewById(R.id.buttonLogin);
-
-        login.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                emailtxt = email.getText().toString();
-                passtxt = password.getText().toString();
+        int success=1;
+        //If login already
+        if (success==1) {
+            login.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view){
+                    emailtxt = email.getText().toString();
+                    passtxt = password.getText().toString();
 //                params = new ArrayList<NameValuePair>();
 //                params.add(new BasicNameValuePair("email", emailtxt));
 //                params.add(new BasicNameValuePair("password",passtxt));
@@ -56,12 +58,22 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                }
 
-                Intent loginactivity = new Intent(MainActivity.this, MainActivity2.class);
-                loginactivity.putExtra("email",emailtxt);
-                loginactivity.putExtra("password",passtxt);
-                startActivity(loginactivity);
-                finish();
-            }
-        });
+                    gotoMainActivity();
+                }
+            });
+        }else if(success==0) {
+
+        }else {
+            gotoMainActivity();
+        }
+
+    }
+
+    private void gotoMainActivity() {
+        Intent loginactivity = new Intent(MainActivity.this, MainActivity2.class);
+        loginactivity.putExtra("email",emailtxt);
+        loginactivity.putExtra("password",passtxt);
+        startActivity(loginactivity);
+        finish();
     }
 }

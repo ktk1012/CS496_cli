@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,11 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.strongloop.android.loopback.RestAdapter;
+import com.strongloop.android.loopback.callbacks.ListCallback;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,6 +38,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -43,6 +50,8 @@ public class Contacts extends Fragment {
     String serverResponse;
     private Context mContext;
     private Cursor cur;
+    private RestAdapter mRestAdapter;
+
     ArrayList<HashMap<String,String>> localContacts = new ArrayList<HashMap<String,String>>();
     ArrayList<HashMap<String,String>> Contacts = new ArrayList<HashMap<String,String>>();
     ListView listView;
@@ -54,6 +63,7 @@ public class Contacts extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.contacts_list_view, container, false);
+
         listView = (ListView) view.findViewById(android.R.id.list);
 
         SimpleAdapter adapter = new SimpleAdapter(
@@ -97,6 +107,36 @@ public class Contacts extends Fragment {
         cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
         super.onCreate(savedInstanceState);
 
+        Log.d("StartContact", AccessToken.getCurrentAccessToken().getToken());
+
+
+        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
+
+        AddressRepository repository = mRestAdapter.createRepository(AddressRepository.class);
+
+        Log.d("GET ALL ADDRESSED", "ASDFASDF");
+        repository.findAll(new ListCallback<Address>() {
+            @Override
+            public void onSuccess(List<Address> objects) {
+                Log.d("GET SUCCESS", String.valueOf(objects.size()));
+                for (int i=0; i<objects.size(); i++){
+                    HashMap<String, String> map = new HashMap<>();
+                    Address address = objects.get(i);
+                    map.put("name", address.getName());
+                    map.put("number", address.getPhone_num());
+                    map.put("email", address.getEmail());
+//                    map.put("picture", address.getPicture());
+                    Contacts.add(map);
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+        });
+
+
         if(cur.moveToFirst() && cur.getCount()>0)
         {
             while (cur.moveToNext()) {
@@ -105,6 +145,7 @@ public class Contacts extends Fragment {
                 String number = cur.getString(cur.getColumnIndex(Phone.NUMBER));
                     localContact.put("name",name);
                     localContact.put("number", number);
+//                    localContact.put("phoneNum", number);
                 localContacts.add(localContact);
             }
         }

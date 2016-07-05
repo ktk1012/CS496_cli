@@ -9,6 +9,8 @@ import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
+import com.strongloop.android.loopback.RestAdapter;
+
 import cs496.prj_2.R;
 
 /**

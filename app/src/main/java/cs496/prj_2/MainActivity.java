@@ -6,10 +6,22 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ActionMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.strongloop.android.loopback.*;
+import com.strongloop.android.loopback.callbacks.VoidCallback;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -26,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     EditText email, password;
     Button login;
     String emailtxt, passtxt;
+    private CallbackManager callbackManger;
     List<NameValuePair> params;
 //    List<NameValuePair> params;
 
@@ -44,10 +57,49 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "permission requested", Toast.LENGTH_LONG);
         }
         super.onCreate(savedInstanceState);
+        /* Initialize facebook sdk */
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManger = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
          email = (EditText)findViewById(R.id.email);
         password = (EditText)findViewById(R.id.password);
+
+        /* Initialize facebook login */
+        final LoginButton loginButton = (LoginButton)findViewById(R.id.facebook_login);
+        loginButton.setReadPermissions("public_profile", "user_friends");
+
+        loginButton.registerCallback(callbackManger, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("Token", loginResult.getAccessToken().getToken());
+                Log.d("TokenId", loginResult.getAccessToken().getUserId());
+                RestAdapter adapter = new RestAdapter(getApplicationContext(), "http://52.78.69.111:3000/api/");
+                PersonRepository personRepository = adapter.createRepository(PersonRepository.class);
+                String token = loginResult.getAccessToken().getToken();
+                String uid = loginResult.getAccessToken().getUserId();
+                personRepository.fblogin(token, uid, new VoidCallback() {
+                    @Override
+                    public void onSuccess() {
+                        gotoMainActivity();
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                    }
+                });
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
 
         login = (Button)findViewById(R.id.buttonLogin);
         int success=1;
@@ -58,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view){
                     emailtxt = email.getText().toString();
                     passtxt = password.getText().toString();
+
 //                params = new ArrayList<NameValuePair>();
 //                params.add(new BasicNameValuePair("email", emailtxt));
 //                params.add(new BasicNameValuePair("password",passtxt));
@@ -91,5 +144,11 @@ public class MainActivity extends AppCompatActivity {
         loginactivity.putExtra("password",passtxt);
         startActivity(loginactivity);
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManger.onActivityResult(requestCode, resultCode, data);
     }
 }

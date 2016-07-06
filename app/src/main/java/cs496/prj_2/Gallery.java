@@ -114,11 +114,18 @@ public class Gallery extends Fragment{
                     filePathColumn, null, null, null);
             cur.moveToFirst();
             Uri uri = Uri.parse(cur.getString(0));
+            String path = uri.toString();
             Log.d("URI CHECK", uri.toString());
-            Intent in = new Intent(getActivity(), ImageActivity.class);
-            in.putExtra("selected", uri.toString());
+            String token = com.facebook.AccessToken.getCurrentAccessToken().getToken();
+            Ion.with(getContext()).load("http://52.78.69.111:3000/api/images/upload?tokenid="+token)
+                    .setMultipartFile("newFile", new java.io.File(path)).asString()
+                    .setCallback(new FutureCallback<String>() {
+                        @Override
+                        public void onCompleted(Exception e, String result) {
+                            Log.d("FILEUPLOAD", result);
+                        }
+                    });
 
-            startActivity(in);
 //            int columnIndex = cur.getColumnIndex(filePathColumn[0]);
 //            String imgString = cur.getString(columnIndex);
 //            Log.d("IMGSTRING", imgString);

@@ -1,5 +1,6 @@
 package cs496.prj_2;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.net.Uri;
 
+import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.strongloop.android.loopback.AccessToken;
@@ -106,7 +108,7 @@ public class Gallery extends Fragment{
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
-        if(requestCode == REQ_ADD){
+        if(requestCode == REQ_ADD && resultCode == Activity.RESULT_OK && intent != null){
             Uri selectedImage = intent.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Log.d("SELECTED IMAGE", selectedImage.toString());
@@ -118,12 +120,25 @@ public class Gallery extends Fragment{
             Log.d("URI CHECK", uri.toString());
             String token = com.facebook.AccessToken.getCurrentAccessToken().getToken();
             Ion.with(getContext()).load("http://52.78.69.111:3000/api/images/upload?tokenid="+token)
-                    .setMultipartFile("newFile", new java.io.File(path)).asString()
-                    .setCallback(new FutureCallback<String>() {
+                    .setMultipartFile("newFile", new java.io.File(path)).asJsonObject()
+                    .setCallback(new FutureCallback<JsonObject>() {
                         @Override
-                        public void onCompleted(Exception e, String result) {
-                            Log.d("FILEUPLOAD", result);
-                        }
+                        public void onCompleted(Exception e, JsonObject result) {
+                            String owner = com.facebook.AccessToken.getCurrentAccessToken().getUserId();
+                            mImageRepo.get(owner, new ListCallback<Image>() {
+                                @Override
+                                public void onSuccess(List<Image> objects) {
+                                    Log.d("FILESUCCESS", String.valueOf(objects.size()));
+                                    images = (ArrayList<Image>) objects;
+                                    adapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onError(Throwable t) {
+
+                                }
+                            });
+                       }
                     });
 
 //            int columnIndex = cur.getColumnIndex(filePathColumn[0]);
@@ -162,8 +177,8 @@ public class Gallery extends Fragment{
             }
 
             Image img = images.get(position);
-            Ion.with(imageView).placeholder(R.drawable.placeholder).fitCenter().resize(100, 100)
-                    .load(img.getUrl());
+            Ion.with(getContext()).load(img.getUrl()).withBitmap().resize(BitmapHelper.dpToPx(100), BitmapHelper.dpToPx(100))
+                    .fitCenter().intoImageView(imageView);
 //            BitmapHelper.loadBitmap(mThumbIds[position],imageView,BitmapHelper.dpToPx(100),BitmapHelper.dpToPx(100),mPlaceHolderBitmap,getResources());
 
             return imageView;

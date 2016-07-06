@@ -8,16 +8,7 @@ import com.strongloop.android.loopback.Model;
 public class Image extends Model{
     private String Id;
     private String owner;
-    private String userid;
     private String url;
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
 
     public String getUrl() {
         return url;

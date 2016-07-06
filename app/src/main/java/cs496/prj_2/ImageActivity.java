@@ -35,11 +35,11 @@ public class ImageActivity extends Activity{
         int width = options.outWidth;
         int height = options.outHeight;
         if ((height/(double)width)*pSize.x>pSize.y) {
-            Ion.with(image).placeholder(R.drawable.waiting).fitCenter().resize((int)(pSize.y*(width/(double)height)), pSize.y)
-                    .load(img_url);
+            Ion.with(this).load(img_url).withBitmap().resize((int)(pSize.y*(width/(double)height)), pSize.y)
+                    .fitCenter().intoImageView(image);
         } else {
-            Ion.with(image).placeholder(R.drawable.waiting).fitCenter().resize(pSize.x, (int)(pSize.x * (height/(double)width)))
-                    .load(img_url);
+            Ion.with(this).load(img_url).withBitmap().resize(pSize.x, (int)(pSize.x * (height/(double)width)))
+                    .fitCenter().intoImageView(image);
         }
 
 

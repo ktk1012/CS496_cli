@@ -16,6 +16,7 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import com.koushikdutta.ion.Ion;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
@@ -56,7 +57,9 @@ public class SingleContacts extends Activity {
         txtName.setText(name, TextView.BufferType.EDITABLE);
         txtphoneNum.setText(number, TextView.BufferType.EDITABLE);
         txtemail.setText(email, TextView.BufferType.EDITABLE);
-        new ImageDownloaderTask(profile).execute(img);
+        Ion.with(profile).placeholder(R.drawable.placeholder).fitCenter().resize(100, 100)
+                .load(img);
+//        new ImageDownloaderTask(profile).execute(img);
 
         Button buttonEdit = (Button) findViewById(R.id.buttonEdit);
 

@@ -22,17 +22,17 @@ public class CreateAddrActivity extends AppCompatActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.contact_create);
-        Button bt1 = (Button) findViewById(R.id.AddBtn1);
-        EditText ed1 = (EditText) findViewById(R.id.edit_num);
+        setContentView(R.layout.single_contact);
+        Button bt1 = (Button) findViewById(R.id.buttonEdit);
+        EditText ed1 = (EditText) findViewById(R.id.txtnumber);
         ed1.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         bt1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                String name = ((EditText)findViewById(R.id.edit_name)).getText().toString();
-                String num = ((EditText)findViewById(R.id.edit_num)).getText().toString();
-                String email = ((EditText)findViewById(R.id.edit_email)).getText().toString();
+                String name = ((EditText)findViewById(R.id.txtname)).getText().toString();
+                String num = ((EditText)findViewById(R.id.txtnumber)).getText().toString();
+                String email = ((EditText)findViewById(R.id.txtemail)).getText().toString();
 
                 if(name.length()==0 || num.length()==0 || email.length()==0){
                     Snackbar.make(v, "Please fill the name or phone number or email", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
@@ -43,9 +43,7 @@ public class CreateAddrActivity extends AppCompatActivity {
                 extra.putString("name",name);
                 extra.putString("phone_num", num);
                 extra.putString("email",email);
-                extra.putString("id",null);
-                extra.putString("picture",null);
-                extra.putString("position", null);
+                extra.putString("picture","");
                 in.putExtras(extra);
                 setResult(1, in);
                 finish();

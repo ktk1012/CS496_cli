@@ -33,6 +33,9 @@ public class AddressRepository extends ModelRepository<Address> {
         contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/:id", "PUT"),
                 getClassName() + ".put");
 
+        contract.addItem(new RestContractItem("/" + getNameForRestUrl(), "PUT"),
+                getClassName() + ".upsert");
+
         return contract;
     }
 
@@ -42,5 +45,9 @@ public class AddressRepository extends ModelRepository<Address> {
 
     public void put(HashMap<String, Object> params, final ObjectCallback<Address> callback) {
         invokeStaticMethod("put", params, new JsonObjectParser<Address>(this, callback));
+    }
+
+    public void upsert(HashMap<String, Object> params, final ObjectCallback<Address> callback) {
+        invokeStaticMethod("upsert", params, new JsonObjectParser<Address>(this, callback));
     }
 }

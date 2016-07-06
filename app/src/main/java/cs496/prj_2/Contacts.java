@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -54,7 +55,8 @@ public class Contacts extends Fragment {
 //    HttpContext httpContext = new BasicHttpContext();
 //    HttpPost httpPost = new HttpPost(/*put url her*/);
 //    String serverResponse;
-    private int REQ_PUT = 1012;
+    private static int REQ_PUT = 1012;
+    private static int REQ_ADD = 1013;
     private Context mContext;
     private Cursor cur;
     private RestAdapter mRestAdapter;
@@ -73,17 +75,14 @@ public class Contacts extends Fragment {
 
         View view = inflater.inflate(R.layout.contacts_list_view, container, false);
 
-        listView = (ListView) view.findViewById(android.R.id.list);
+        listView = (ListView) view.findViewById(R.id.list);
 
-        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
-
-        mAddressRepo = mRestAdapter.createRepository(AddressRepository.class);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View view){
-                Intent in = new Intent(getActivity(),CreateAddrActivity.class);
-                startActivityForResult(in,REQ_PUT);
+                Intent in = new Intent(getActivity(), CreateAddrActivity.class);
+                startActivityForResult(in, REQ_ADD);
             }
         });
 
@@ -169,6 +168,8 @@ public class Contacts extends Fragment {
         super.onCreate(savedInstanceState);
         mContext = getContext();
         cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
+        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
+        mAddressRepo = mRestAdapter.createRepository(AddressRepository.class);
 
 
 
@@ -257,6 +258,34 @@ public class Contacts extends Fragment {
                     public void onSuccess(Address object) {
                         Contacts.set(position, object);
                         mAdapter.updateAddressAdapter(Contacts);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+                });
+            }
+        } else if(requestCode == REQ_ADD) {
+            if (resultCode == 1) {
+                String name = intent.getStringExtra("name");
+                String number = intent.getStringExtra("phone_num");
+                String email = intent.getStringExtra("email");
+                final String picture = intent.getStringExtra("picture");
+
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("name", name);
+                param.put("email", email);
+                param.put("phone_num", number);
+                param.put("picture", picture);
+                param.put("owner", AccessToken.getCurrentAccessToken().getUserId());
+
+                mAddressRepo.upsert((HashMap<String, Object>) param, new ObjectCallback<Address>() {
+                    @Override
+                    public void onSuccess(Address object) {
+                        Contacts.add(object);
+                        mAdapter.updateAddressAdapter(Contacts);
+                        Toast.makeText(getContext(), "Add", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

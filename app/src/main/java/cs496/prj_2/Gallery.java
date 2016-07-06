@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Camera;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,24 +17,35 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.strongloop.android.loopback.AccessToken;
+import com.strongloop.android.loopback.Container;
+import com.strongloop.android.loopback.ContainerRepository;
+import com.strongloop.android.loopback.File;
+import com.strongloop.android.loopback.RestAdapter;
+import com.strongloop.android.loopback.callbacks.ListCallback;
+import com.strongloop.android.loopback.callbacks.ObjectCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Gallery extends Fragment{
     private ImageAdapter adapter;
     private Bitmap mPlaceHolderBitmap;
-
-    public static final Integer[] mThumbIds = {
-            R.drawable.image1, R.drawable.image2, R.drawable.image3, R.drawable.image4,
-            R.drawable.image5, R.drawable.image6, R.drawable.image7, R.drawable.image8,
-            R.drawable.image9, R.drawable.image10, R.drawable.image11, R.drawable.image12,
-            R.drawable.image13, R.drawable.image14, R.drawable.image15, R.drawable.image16,
-            R.drawable.image17, R.drawable.image18
-    };
+    private RestAdapter mRestAdapter;
+    private ImageRepository mImageRepo;
+    private ArrayList<Image> images = new ArrayList<Image>();
 
     @Override
-    public void onCreate(Bundle savedInstanceBundle){
+    public void onCreate(Bundle savedInstanceBundle) {
+        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
         super.onCreate(savedInstanceBundle);
-        adapter = new ImageAdapter(getActivity());
         mPlaceHolderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.waiting);
+        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
+        mImageRepo = mRestAdapter.createRepository(ImageRepository.class);
     }
 
 
@@ -41,8 +54,9 @@ public class Gallery extends Fragment{
         View view = inflater.inflate(R.layout.gallery, container, false);
 
         GridView gridView = (GridView) view.findViewById(R.id.gridView);
+
+        adapter = new ImageAdapter(getContext());
         gridView.setAdapter(adapter);
-//        gridView.setOnItemClickListener(new AdapterView);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -50,14 +64,31 @@ public class Gallery extends Fragment{
                                     int position, long id) {
 
                 Intent in = new Intent(getActivity(), ImageActivity.class);
-                in.putExtra("selected",position);
+                Image img = images.get(position);
+                in.putExtra("selected", img.getUrl());
 
                 startActivity(in);
 
             }
         });
+        String owner = com.facebook.AccessToken.getCurrentAccessToken().getUserId();
+        mImageRepo.get(owner, new ListCallback<Image>() {
+            @Override
+            public void onSuccess(List<Image> objects) {
+                Log.d("FILESUCCESS", String.valueOf(objects.size()));
+                images = (ArrayList<Image>) objects;
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+        });
         return view;
     }
+
+
     private class ImageAdapter extends BaseAdapter {
         private Context mContext;
 
@@ -65,14 +96,14 @@ public class Gallery extends Fragment{
             mContext = c;
         }
         public Object getItem(int position){
-            return null;
+            return images.get(position);
         }
-        public int getCount(){return mThumbIds.length;}
+        public int getCount(){return images.size();}
         public long getItemId(int position){
-            return 0;
+            return position;
         }
         public View getView(int position, View convertView, ViewGroup parent){
-            ImageView imageView;
+            final ImageView imageView;
 
             if(convertView == null){
                 imageView = new ImageView(mContext);
@@ -84,10 +115,17 @@ public class Gallery extends Fragment{
                 imageView = (ImageView) convertView;
             }
 
-            BitmapHelper.loadBitmap(mThumbIds[position],imageView,BitmapHelper.dpToPx(100),BitmapHelper.dpToPx(100),mPlaceHolderBitmap,getResources());
+            Image img = images.get(position);
+            Ion.with(imageView).placeholder(R.drawable.placeholder).fitCenter().resize(100, 100)
+                    .load(img.getUrl());
+//            BitmapHelper.loadBitmap(mThumbIds[position],imageView,BitmapHelper.dpToPx(100),BitmapHelper.dpToPx(100),mPlaceHolderBitmap,getResources());
 
             return imageView;
         }
+
+//        public void updateImageAdapter(ArrayList<Image> newList) {
+//
+//        }
     }
 
 }

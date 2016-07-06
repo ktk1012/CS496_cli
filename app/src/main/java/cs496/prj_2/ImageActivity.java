@@ -8,6 +8,8 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.koushikdutta.ion.Ion;
+
 /**
  * Created by q on 2016-07-05.
  */
@@ -25,17 +27,19 @@ public class ImageActivity extends Activity{
         getWindowManager().getDefaultDisplay().getSize(pSize);
 
         Intent intent = getIntent();
-        int rid = Gallery.mThumbIds[intent.getIntExtra("selected",0)];
+        String img_url = intent.getStringExtra("selected");
+
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), rid, options);
 
         int width = options.outWidth;
         int height = options.outHeight;
         if ((height/(double)width)*pSize.x>pSize.y) {
-            BitmapHelper.loadBitmap(rid, image, (int)(pSize.y*(width/(double)height)), pSize.y, mPlaceHolderBitmap, getResources());
+            Ion.with(image).placeholder(R.drawable.waiting).fitCenter().resize((int)(pSize.y*(width/(double)height)), pSize.y)
+                    .load(img_url);
         } else {
-            BitmapHelper.loadBitmap(rid, image, pSize.x, (int)(pSize.x*(height/(double)width)), mPlaceHolderBitmap, getResources());
+            Ion.with(image).placeholder(R.drawable.waiting).fitCenter().resize(pSize.x, (int)(pSize.x * (height/(double)width)))
+                    .load(img_url);
         }
 
 

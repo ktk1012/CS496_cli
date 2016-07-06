@@ -1,9 +1,13 @@
 package cs496.prj_2;
 
+import android.provider.Telephony;
+
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.callbacks.JsonArrayParser;
+import com.strongloop.android.loopback.callbacks.JsonObjectParser;
 import com.strongloop.android.loopback.callbacks.ListCallback;
+import com.strongloop.android.loopback.callbacks.ObjectCallback;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
 import com.strongloop.android.remoting.adapters.Adapter;
 import com.strongloop.android.remoting.adapters.RestContract;
@@ -36,18 +40,7 @@ public class AddressRepository extends ModelRepository<Address> {
         invokeStaticMethod("get", ImmutableMap.of("owner", owner), new JsonArrayParser<Address>(this, callback));
     }
 
-    public void put(HashMap<String, Object> params, final VoidCallback callback) {
-        invokeStaticMethod("put", params, new Adapter.Callback() {
-
-            @Override
-            public void onSuccess(String response) {
-               callback.onSuccess();
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                callback.onError(t);
-            }
-        });
+    public void put(HashMap<String, Object> params, final ObjectCallback<Address> callback) {
+        invokeStaticMethod("put", params, new JsonObjectParser<Address>(this, callback));
     }
 }

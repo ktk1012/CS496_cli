@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.Telephony;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.facebook.AccessTokenTracker;
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
+import com.strongloop.android.loopback.callbacks.ObjectCallback;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
 
 import org.apache.http.HttpEntity;
@@ -50,6 +53,7 @@ public class Contacts extends Fragment {
 //    HttpContext httpContext = new BasicHttpContext();
 //    HttpPost httpPost = new HttpPost(/*put url her*/);
 //    String serverResponse;
+    private int REQ_PUT = 1012;
     private Context mContext;
     private Cursor cur;
     private RestAdapter mRestAdapter;
@@ -89,13 +93,43 @@ public class Contacts extends Fragment {
 
                 Intent in = new Intent(getActivity().getApplicationContext(),
                         SingleContacts.class);
+                in.putExtra("position", position);
                 in.putExtra("name", addr.getName());
                 in.putExtra("phoneNum", addr.getPhone_num());
                 in.putExtra("email",addr.getEmail());
                 in.putExtra("image", addr.getPicture());
                 in.putExtra("id", addr.getId().toString());
                 in.putExtra("pic", addr.getPicture());
-                startActivity(in);
+                startActivityForResult(in, REQ_PUT);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                final Address addr_item = (Address) mAdapter.getItem(position);
+                String name = addr_item.getName();
+
+                Snackbar.make(view, name, Snackbar.LENGTH_SHORT)
+                        .setAction("Remove", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                addr_item.destroy(new VoidCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Contacts.remove(position);
+                                        mAdapter.updateAddressAdapter(Contacts);
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable t) {
+
+                                    }
+                                });
+                            }
+                }).show();
+                return true;
             }
         });
 
@@ -106,7 +140,7 @@ public class Contacts extends Fragment {
                 Contacts = (ArrayList<Address>) objects;
                 mAdapter.updateAddressAdapter(Contacts);
                 for (int i = 0; i < Contacts.size(); i++) {
-                    Log.d("SUCCESS", "Contact" + Contacts.get(i).getEmail());
+                    Log.d("SUCCESS", "Contact(" + String.valueOf(i) + "): " + Contacts.get(i).getEmail());
                 }
                 Log.d("COUNT", String.valueOf(mAdapter.getCount()));
             }
@@ -187,6 +221,42 @@ public class Contacts extends Fragment {
 //        }catch(Exception e){
 //            e.printStackTrace();
 //        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == REQ_PUT) {
+            if (resultCode == 1) {
+                String name = intent.getStringExtra("name");
+                String number = intent.getStringExtra("phone_num");
+                String email = intent.getStringExtra("email");
+                final int position = intent.getIntExtra("position", 0);
+                final String id = intent.getStringExtra("id");
+                final String picture = intent.getStringExtra("picture");
+
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("id", id);
+                param.put("name", name);
+                param.put("email", email);
+                param.put("phone_num", number);
+                param.put("picture", picture);
+                param.put("owner", AccessToken.getCurrentAccessToken().getUserId());
+
+
+                mAddressRepo.put((HashMap<String, Object>) param, new ObjectCallback<Address>() {
+                    @Override
+                    public void onSuccess(Address object) {
+                        Contacts.set(position, object);
+                        mAdapter.updateAddressAdapter(Contacts);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+                });
+            }
+        }
     }
 
     public String listmap_to_json_string(ArrayList<HashMap<String, String>> list){

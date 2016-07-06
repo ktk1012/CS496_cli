@@ -41,6 +41,7 @@ public class SingleContacts extends Activity {
         String number = in.getStringExtra("phoneNum");
         String email = in.getStringExtra("email");
         String img = in.getStringExtra("image");
+        final int position = in.getIntExtra("position", 0);
         final String id = in.getStringExtra("id");
         final String picture = in.getStringExtra("pic");
 
@@ -66,25 +67,39 @@ public class SingleContacts extends Activity {
                 numberEdit = txtphoneNum.getText().toString();
                 emailEdit = txtemail.getText().toString();
 
-                Map<String, Object> param = new HashMap<String, Object>();
-                param.put("id", id);
-                param.put("name", nameEdit);
-                param.put("emal", emailEdit);
-                param.put("phone_num", numberEdit);
-                param.put("picture", picture);
-                param.put("owner", AccessToken.getCurrentAccessToken().getUserId());
+                Bundle extra = new Bundle();
+                Intent intent = new Intent();
+                extra.putString("id", id);
+                extra.putString("name", nameEdit);
+                extra.putString("email", emailEdit);
+                extra.putString("phone_num", numberEdit);
+                extra.putString("picture", picture);
+                extra.putInt("position", position);
 
-                mAddressRepo.put((HashMap<String, Object>) param, new VoidCallback() {
-                    @Override
-                    public void onSuccess() {
+                intent.putExtras(extra);
+                setResult(1, intent);
+                finish();
 
-                    }
 
-                    @Override
-                    public void onError(Throwable t) {
-
-                    }
-                });
+//                Map<String, Object> param = new HashMap<String, Object>();
+//                param.put("id", id);
+//                param.put("name", nameEdit);
+//                param.put("email", emailEdit);
+//                param.put("phone_num", numberEdit);
+//                param.put("picture", picture);
+//                param.put("owner", AccessToken.getCurrentAccessToken().getUserId());
+//
+//
+//                mAddressRepo.put((HashMap<String, Object>) param, new ObjectCallback<Address>() {
+//                    @Override
+//                    public void onSuccess(Address object) {
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable t) {
+//
+//                    }
+//                });
             }
         });
     }

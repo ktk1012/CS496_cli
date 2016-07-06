@@ -37,7 +37,7 @@ public class MainActivity2 extends ActionBarActivity implements android.support.
 
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         Tab Contactstab = getSupportActionBar().newTab().setText("Contacts").setTabListener(this);
         Tab Imagestab = getSupportActionBar().newTab().setText("Images").setTabListener(this);

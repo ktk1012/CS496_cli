@@ -9,7 +9,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +25,7 @@ public class CreateAddrActivity extends AppCompatActivity {
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_contact);
+        ImageView imageView = (ImageView) findViewById(R.id.imgprofile);
         Button bt1 = (Button) findViewById(R.id.buttonEdit);
         EditText ed1 = (EditText) findViewById(R.id.txtnumber);
         ed1.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
@@ -47,6 +50,14 @@ public class CreateAddrActivity extends AppCompatActivity {
                 in.putExtras(extra);
                 setResult(1, in);
                 finish();
+            }
+        });
+
+        imageView.setOnClickListener(new ImageView.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "TABTAB", Toast.LENGTH_SHORT).show();
             }
         });
     }

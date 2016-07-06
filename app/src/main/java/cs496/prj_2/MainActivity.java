@@ -16,10 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
+import com.facebook.*;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -67,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         callbackManger = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
+        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
+            gotoMainActivity();
+        }
 //        email = (EditText)findViewById(R.id.email);
 //        password = (EditText)findViewById(R.id.password);
 

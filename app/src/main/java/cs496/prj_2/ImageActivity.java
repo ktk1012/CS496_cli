@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.koushikdutta.ion.Ion;
@@ -35,13 +36,17 @@ public class ImageActivity extends Activity{
         int width = options.outWidth;
         int height = options.outHeight;
         if ((height/(double)width)*pSize.x>pSize.y) {
-            Ion.with(this).load(img_url).withBitmap().resize((int)(pSize.y*(width/(double)height)), pSize.y)
+            Ion.with(this).load(img_url).withBitmap().resize(650, 650)
                     .fitCenter().intoImageView(image);
         } else {
-            Ion.with(this).load(img_url).withBitmap().resize(pSize.x, (int)(pSize.x * (height/(double)width)))
+            Ion.with(this).load(img_url).withBitmap().resize(650, 650)
                     .fitCenter().intoImageView(image);
         }
+    }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("DESTROY", "ASDFASDF");
     }
 }

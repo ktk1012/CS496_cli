@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
         callbackManger = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
-        email = (EditText)findViewById(R.id.email);
-        password = (EditText)findViewById(R.id.password);
+//        email = (EditText)findViewById(R.id.email);
+//        password = (EditText)findViewById(R.id.password);
 
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -120,15 +120,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        login = (Button)findViewById(R.id.buttonLogin);
-        int success=1;
-        //If login already
-        if (success==1) {
-            login.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view){
-                    emailtxt = email.getText().toString();
-                    passtxt = password.getText().toString();
+//        login = (Button)findViewById(R.id.buttonLogin);
+//        int success=1;
+//        //If login already
+//        if (success==1) {
+//            login.setOnClickListener(new View.OnClickListener(){
+//                @Override
+//                public void onClick(View view){
+//                    emailtxt = email.getText().toString();
+//                    passtxt = password.getText().toString();
 
 //                params = new ArrayList<NameValuePair>();
 //                params.add(new BasicNameValuePair("email", emailtxt));
@@ -146,17 +146,17 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                }
 
-                    gotoMainActivity();
-                }
-            });
-        }else if(success==0) {
-
-        }else {
-            gotoMainActivity();
-        }
-
+//                    gotoMainActivity();
+//                }
+//            });
+//        }else if(success==0) {
+//
+//        }else {
+//            gotoMainActivity();
+//        }
+//
     }
-
+//
     private void gotoMainActivity() {
         Intent loginactivity = new Intent(MainActivity.this, MainActivity2.class);
         loginactivity.putExtra("email",emailtxt);

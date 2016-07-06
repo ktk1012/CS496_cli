@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
         callbackManger = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
-        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
-            gotoMainActivity();
-        }
+//        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
+//            gotoMainActivity();
+//        }
 //        email = (EditText)findViewById(R.id.email);
 //        password = (EditText)findViewById(R.id.password);
 
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         }
         /* Initialize facebook login */
         final LoginButton loginButton = (LoginButton)findViewById(R.id.facebook_login);
-        loginButton.setReadPermissions("public_profile", "user_friends");
+        loginButton.setReadPermissions("public_profile", "user_friends", "email");
 
         loginButton.registerCallback(callbackManger, new FacebookCallback<LoginResult>() {
             @Override

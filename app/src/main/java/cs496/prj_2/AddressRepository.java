@@ -40,7 +40,9 @@ public class AddressRepository extends ModelRepository<Address> {
     }
 
     public void get(String owner, final ListCallback<Address> callback) {
-        invokeStaticMethod("get", ImmutableMap.of("owner", owner), new JsonArrayParser<Address>(this, callback));
+        invokeStaticMethod("get", ImmutableMap.of("filter",
+                ImmutableMap.of("where",
+                        ImmutableMap.of("owner", owner))), new JsonArrayParser<Address>(this, callback));
     }
 
     public void put(HashMap<String, Object> params, final ObjectCallback<Address> callback) {

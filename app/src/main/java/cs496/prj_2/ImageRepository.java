@@ -27,7 +27,8 @@ public class ImageRepository extends ModelRepository<Image> {
     }
 
     public void get(String userid, final ListCallback<Image> callback) {
-        invokeStaticMethod("get", ImmutableMap.of("owner", userid),
-                new JsonArrayParser<Image>(this, callback));
+        invokeStaticMethod("get", ImmutableMap.of("filter",
+                ImmutableMap.of("where",
+                        ImmutableMap.of("owner", userid))), new JsonArrayParser<Image>(this, callback));
     }
 }

@@ -10,14 +10,14 @@
     tools:context=".Contacts">
 
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
 
     <android.support.design.widget.FloatingActionButton
-        xlms:app = "http://schemas.android.com/apk/res-auto"
+        xmlns:app = "http://schemas.android.com/apk/res-auto"
         android:id = "@+id/fab"
         android:layout_width = "wrap_content"
         android:layout_height="wrap_content"
@@ -28,6 +28,6 @@
         android:layout_marginLeft = "@dimen/fab_margin_horizontal"
         android:layout_marginRight = "@dimen/fab_margin_horizontal"
         android:layout_marginBottom = "@dimen/fab_margin_vertical"
-        android:layout_alignEnd="@+id/addr_view"/>
+        android:layout_alignEnd="@+id/list"/>
 
 </RelativeLayout>

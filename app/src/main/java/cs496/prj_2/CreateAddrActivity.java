@@ -22,7 +22,7 @@ public class CreateAddrActivity extends AppCompatActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.contac_create);
+        setContentView(R.layout.contact_create);
         Button bt1 = (Button) findViewById(R.id.AddBtn1);
         EditText ed1 = (EditText) findViewById(R.id.edit_num);
         ed1.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
@@ -41,11 +41,14 @@ public class CreateAddrActivity extends AppCompatActivity {
                 Bundle extra = new Bundle();
                 Intent in = new Intent();
                 extra.putString("name",name);
-                extra.putString("num", num);
+                extra.putString("phone_num", num);
                 extra.putString("email",email);
-                in.putExtra(extra);
+                extra.putString("id",null);
+                extra.putString("picture",null);
+                extra.putString("position", null);
+                in.putExtras(extra);
                 setResult(1, in);
-                finish()
+                finish();
             }
         });
     }

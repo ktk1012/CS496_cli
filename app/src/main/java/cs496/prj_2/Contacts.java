@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -77,6 +78,14 @@ public class Contacts extends Fragment {
         mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
 
         mAddressRepo = mRestAdapter.createRepository(AddressRepository.class);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View view){
+                Intent in = new Intent(getActivity(),CreateAddrActivity.class);
+                startActivityForResult(in,REQ_PUT);
+            }
+        });
 
         Log.d("OnCreateView", String.valueOf(Contacts.size()));
 

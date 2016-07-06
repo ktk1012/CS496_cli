@@ -2,11 +2,14 @@ package cs496.prj_2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +21,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.net.Uri;
 
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -33,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Gallery extends Fragment{
+    private static int REQ_PUT = 2012;
+    private static int REQ_ADD = 2013;
     private ImageAdapter adapter;
     private Bitmap mPlaceHolderBitmap;
     private RestAdapter mRestAdapter;
@@ -71,6 +77,17 @@ public class Gallery extends Fragment{
 
             }
         });
+
+        FloatingActionButton fabButton = (FloatingActionButton)view.findViewById(R.id.fab);
+        fabButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent galleryIn = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIn, REQ_ADD);
+            }
+        });
+
         String owner = com.facebook.AccessToken.getCurrentAccessToken().getUserId();
         mImageRepo.get(owner, new ListCallback<Image>() {
             @Override
@@ -86,6 +103,22 @@ public class Gallery extends Fragment{
             }
         });
         return view;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        if(requestCode == REQ_ADD){
+            Uri selectedImage = intent.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cur = getActivity().getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cur.moveToFirst();
+
+            int columnIndex = cur.getColumnIndex(filePathColumn[0]);
+            String imgString = cur.getString(columnIndex);
+
+            cur.close();
+        }
     }
 
 

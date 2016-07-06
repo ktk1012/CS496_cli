@@ -50,7 +50,7 @@ public class Gallery extends Fragment{
         mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
         super.onCreate(savedInstanceBundle);
         mPlaceHolderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.waiting);
-        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
+//        mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
         mImageRepo = mRestAdapter.createRepository(ImageRepository.class);
     }
 
@@ -109,13 +109,19 @@ public class Gallery extends Fragment{
         if(requestCode == REQ_ADD){
             Uri selectedImage = intent.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
+            Log.d("SELECTED IMAGE", selectedImage.toString());
             Cursor cur = getActivity().getContentResolver().query(selectedImage,
                     filePathColumn, null, null, null);
             cur.moveToFirst();
+            Uri uri = Uri.parse(cur.getString(0));
+            Log.d("URI CHECK", uri.toString());
+            Intent in = new Intent(getActivity(), ImageActivity.class);
+            in.putExtra("selected", uri.toString());
 
-            int columnIndex = cur.getColumnIndex(filePathColumn[0]);
-            String imgString = cur.getString(columnIndex);
+            startActivity(in);
+//            int columnIndex = cur.getColumnIndex(filePathColumn[0]);
+//            String imgString = cur.getString(columnIndex);
+//            Log.d("IMGSTRING", imgString);
 
             cur.close();
         }

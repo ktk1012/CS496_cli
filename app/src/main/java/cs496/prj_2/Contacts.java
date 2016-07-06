@@ -54,10 +54,10 @@ public class Contacts extends Fragment {
     private Cursor cur;
     private RestAdapter mRestAdapter;
     private AddressRepository mAddressRepo;
-    private SimpleAdapter mAdapter;
+    private AddressAdapter mAdapter;
 
     ArrayList<Address> localContacts = new ArrayList<>();
-    ArrayList<HashMap<String,String>> Contacts = new ArrayList<HashMap<String,String>>();
+    ArrayList<Address> Contacts = new ArrayList<Address>();
     ListView listView;
 
     String JsonArray;
@@ -69,7 +69,6 @@ public class Contacts extends Fragment {
         View view = inflater.inflate(R.layout.contacts_list_view, container, false);
 
         listView = (ListView) view.findViewById(android.R.id.list);
-        Log.d("OnCreateView", String.valueOf(Contacts.size()));
 
         mRestAdapter = new RestAdapter(getContext(), "http://52.78.69.111:3000/api");
 
@@ -78,12 +77,7 @@ public class Contacts extends Fragment {
         Log.d("OnCreateView", String.valueOf(Contacts.size()));
 
 
-        mAdapter= new SimpleAdapter(
-                getActivity(), Contacts,
-                R.layout.contacts_list_item,
-                new String[]{"name", "number", "email"},
-                new int[] { R.id.name, R.id.number, R.id.email}
-        );
+        mAdapter = new AddressAdapter(getContext(), Contacts);
         listView.setAdapter(mAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -91,39 +85,30 @@ public class Contacts extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                String name = ((TextView) view.findViewById(R.id.name))
-                        .getText().toString();
-                String number = "Phone Number: " + ((TextView) view.findViewById(R.id.number))
-                        .getText().toString();
-                String email = "Email: " + ((TextView) view.findViewById(R.id.email))
-                        .getText().toString();
+                Address addr = (Address) mAdapter.getItem(position);
 
                 Intent in = new Intent(getActivity().getApplicationContext(),
                         SingleContacts.class);
-                in.putExtra("name", name);
-                in.putExtra("phoneNum", number);
-                in.putExtra("email",email);
+                in.putExtra("name", addr.getName());
+                in.putExtra("phoneNum", addr.getPhone_num());
+                in.putExtra("email",addr.getEmail());
+                in.putExtra("image", addr.getPicture());
+                in.putExtra("id", addr.getId().toString());
+                in.putExtra("pic", addr.getPicture());
                 startActivity(in);
-
             }
         });
 
-        Log.d("GET ALL ADDRESSED", "ASDFASDF");
-        mAddressRepo.findAll(new ListCallback<Address>() {
+        String owner = AccessToken.getCurrentAccessToken().getUserId();
+        mAddressRepo.get(owner, new ListCallback<Address>() {
             @Override
             public void onSuccess(List<Address> objects) {
-                Log.d("GET SUCCESS", String.valueOf(objects.size()));
-                for (int i=0; i<objects.size(); i++){
-                    HashMap<String, String> map = new HashMap<>();
-                    Address address = objects.get(i);
-                    Log.d("GET SUCCESSS", String.valueOf(i) + address.getId());
-                    map.put("name", address.getName());
-                    map.put("number", address.getPhone_num());
-                    map.put("email", address.getEmail());
-//                    map.put("picture", address.getPicture());
-                    Contacts.add(map);
+                Contacts = (ArrayList<Address>) objects;
+                mAdapter.updateAddressAdapter(Contacts);
+                for (int i = 0; i < Contacts.size(); i++) {
+                    Log.d("SUCCESS", "Contact" + Contacts.get(i).getEmail());
                 }
-                mAdapter.notifyDataSetChanged();
+                Log.d("COUNT", String.valueOf(mAdapter.getCount()));
             }
 
             @Override
@@ -142,7 +127,6 @@ public class Contacts extends Fragment {
         mContext = getContext();
         cur = mContext.getContentResolver().query(Phone.CONTENT_URI, null, null, null, null);
 
-        Log.d("StartContact", AccessToken.getCurrentAccessToken().getToken());
 
 
 

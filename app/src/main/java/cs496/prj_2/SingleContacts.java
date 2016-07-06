@@ -99,7 +99,6 @@ public class SingleContacts extends Activity {
 //                    public void onError(Throwable t) {
 //
 //                    }
-//                });
             }
         });
     }

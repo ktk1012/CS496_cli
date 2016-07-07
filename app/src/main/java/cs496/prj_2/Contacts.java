@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.design.widget.FloatingActionButton;
@@ -62,6 +63,7 @@ public class Contacts extends Fragment {
     private RestAdapter mRestAdapter;
     private AddressRepository mAddressRepo;
     private AddressAdapter mAdapter;
+    Parcelable state;
 
     ArrayList<Address> localContacts = new ArrayList<>();
     ArrayList<Address> Contacts = new ArrayList<Address>();
@@ -142,7 +144,8 @@ public class Contacts extends Fragment {
         });
 
         String owner = AccessToken.getCurrentAccessToken().getUserId();
-        mAddressRepo.get(owner, new ListCallback<Address>() {
+        String token = AccessToken.getCurrentAccessToken().getToken();
+        mAddressRepo.getmobile(owner, token, new ListCallback<Address>() {
             @Override
             public void onSuccess(List<Address> objects) {
                 Contacts = (ArrayList<Address>) objects;
@@ -155,6 +158,7 @@ public class Contacts extends Fragment {
 
             @Override
             public void onError(Throwable t) {
+                Log.d("GETGETGET", "ERRRRRR");
 
             }
         });

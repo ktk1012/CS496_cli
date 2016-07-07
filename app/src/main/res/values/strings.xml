@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">PRJ_2</string>
     <string name="facebook_app">1742982449314520</string>
+    <string name="menu_logout">Logout</string>
 </resources>

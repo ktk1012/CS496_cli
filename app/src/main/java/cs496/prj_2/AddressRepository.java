@@ -27,8 +27,8 @@ public class AddressRepository extends ModelRepository<Address> {
     public RestContract createContract() {
         RestContract contract = super.createContract();
 
-        contract.addItem(new RestContractItem("/" + getNameForRestUrl(), "GET"),
-                getClassName() + ".get");
+        contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/getmobile", "GET"),
+                getClassName() + ".getmobile");
 
         contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/:id", "PUT"),
                 getClassName() + ".put");
@@ -39,10 +39,9 @@ public class AddressRepository extends ModelRepository<Address> {
         return contract;
     }
 
-    public void get(String owner, final ListCallback<Address> callback) {
-        invokeStaticMethod("get", ImmutableMap.of("filter",
-                ImmutableMap.of("where",
-                        ImmutableMap.of("owner", owner))), new JsonArrayParser<Address>(this, callback));
+    public void getmobile(String owner, String token, final ListCallback<Address> callback) {
+        invokeStaticMethod("getmobile", ImmutableMap.of("tokenid", token, "fb_uid", owner),
+                new JsonArrayParser<Address>(this, callback));
     }
 
     public void put(HashMap<String, Object> params, final ObjectCallback<Address> callback) {

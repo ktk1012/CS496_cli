@@ -74,6 +74,7 @@ public class Gallery extends Fragment{
                 Intent in = new Intent(getActivity(), ImageActivity.class);
                 Image img = images.get(position);
                 in.putExtra("selected", img.getUrl());
+                in.putExtra("position", position);
 
                 startActivity(in);
 

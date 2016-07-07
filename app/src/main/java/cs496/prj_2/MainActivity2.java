@@ -7,8 +7,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.strongloop.android.loopback.RestAdapter;
 
 import cs496.prj_2.R;
@@ -88,5 +92,24 @@ public class MainActivity2 extends ActionBarActivity implements android.support.
     public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            LoginManager.getInstance().logOut();
+            Intent intent = new Intent(MainActivity2.this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

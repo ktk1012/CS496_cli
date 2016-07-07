@@ -27,4 +27,5 @@ dependencies {
     compile 'com.strongloop:loopback-sdk-android:1.5.+'
     compile 'com.koushikdutta.ion:ion:2.+'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.github.nkzawa:socket.io-client:0.3.0'
 }

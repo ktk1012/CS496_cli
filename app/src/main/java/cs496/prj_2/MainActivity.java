@@ -1,6 +1,7 @@
 package cs496.prj_2;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -64,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
         callbackManger = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
-//        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
-//            gotoMainActivity();
-//        }
+        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
+            gotoMainActivity();
+        }
 //        email = (EditText)findViewById(R.id.email);
 //        password = (EditText)findViewById(R.id.password);
 
@@ -170,4 +171,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManger.onActivityResult(requestCode, resultCode, data);
     }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
+
 }

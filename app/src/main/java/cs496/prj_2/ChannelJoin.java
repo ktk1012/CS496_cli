@@ -69,6 +69,31 @@ public class ChannelJoin extends AppCompatActivity {
             }
         });
 
+        mSub.Subscribe("channel", room_session, "GET", "message", new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                ChannelJoin.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject)args[0];
+                        String content;
+                        String author;
+                        int type;
+                        try {
+                            JSONObject temp = data.getJSONObject("newMsg");
+                            content = temp.getString("content");
+                            author = temp.getString("author");
+                            Toast.makeText(getApplicationContext(), content + ":  " + author, Toast.LENGTH_SHORT).show();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+            }
+        });
+
         mChannelRepo.join(token, room_session, new ListCallback<Message>() {
             @Override
             public void onSuccess(List<Message> objects) {
